@@ -152,6 +152,58 @@ Json::Value collectEVMObject(eth::LinkerObject const& _object, string const* _so
 	return output;
 }
 
+bool isTargetRequired(Json::Value const& _targets, string const& _target)
+{
+	for (auto const& target: _targets)
+		/// @TODO support sub-macthing, e.g "evm" matches "evm.assembly"
+		if (target == "*" || target == _target)
+			return true;
+	return false;
+}
+
+///
+/// @_targets is a JSON object containining a two-level hashmap, where the first level is the filename,
+/// the second level is the contract name and the value is an array of target names to be requested for that contract.
+/// @_file is the current file
+/// @_contract is the current contract
+/// @_target is the current target name
+///
+/// Returns true if the _targets has a match for the requested target in the specific file / contract.
+///
+/// In @_targets the use of '*' as a wildcard is permitted.
+///
+/// @TODO optimise this. Perhaps flatten the structure upfront.
+///
+bool isTargetRequired(Json::Value const& _targets, string const& _file, string const& _contract, string const& _target)
+{
+	if (!_targets.isObject())
+		return false;
+
+	for (auto const& file: { _file, string("*") })
+		if (_targets.isMember(file) && _targets[file].isObject())
+		{
+			if (_contract.empty())
+				/// Special case for SourceUnit-level targets (such as AST)
+				if (
+					_targets[_file].isMember("") &&
+					_targets[_file][""].isArray() &&
+					isTargetRequired(_targets[_file][""], _target)
+				)
+					return true;
+			else
+				/// Regular case for Contract-level targets
+				for (auto const& contract: { _contract, string("*") })
+					if (
+						_targets[_file].isMember(contract) &&
+						_targets[_file][contract].isArray() &&
+						isTargetRequired(_targets[_file][contract], _target)
+					)
+						return true;
+		}
+
+	return false;
+}
+
 }
 
 Json::Value StandardCompiler::compileInternal(Json::Value const& _input)
