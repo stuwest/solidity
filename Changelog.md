@@ -2,6 +2,7 @@
 
 Features:
  * Parser: Display previous visibility specifier in error if multiple are found.
+ * Standard JSON: Support the ``outputSelection`` field to limit outputs.
 
 Bugfixes:
 
