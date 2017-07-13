@@ -145,6 +145,17 @@ inline std::string toHex(u256 val, HexPrefix prefix = HexPrefix::DontAdd)
 	return (prefix == HexPrefix::Add) ? "0x" + str : str;
 }
 
+/// Returns decimal representation for small numbers and hex for large numbers.
+inline std::string formatNumber(bigint const& _value)
+{
+	if (_value < 0)
+		return "-" + formatNumber(-_value);
+	if (_value > 0x1000000)
+		return toHex(toCompactBigEndian(_value), 2, HexPrefix::Add);
+	else
+		return _value.str();
+}
+
 // Algorithms for string and string-like collections.
 
 /// Escapes a string into the C-string representation.
