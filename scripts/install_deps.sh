@@ -167,6 +167,7 @@ case $(uname -s) in
 
             Debian)
                 #Debian
+                install_z3=""
                 case $(lsb_release -cs) in
                     wheezy)
                         #wheezy
@@ -185,20 +186,19 @@ case $(uname -s) in
                     stretch)
                         #stretch
                         echo "Installing solidity dependencies on Debian Stretch (9.x)."
-                        echo "ERROR - 'install_deps.sh' doesn't have Debian Stretch support yet."
-                        echo "See http://solidity.readthedocs.io/en/latest/installing-solidity.html for manual instructions."
-                        echo "If you would like to get 'install_deps.sh' working for Debian Stretch, that would be fantastic."
-                        echo "Drop us a message at https://gitter.im/ethereum/solidity."
-                        exit 1
+                        install_z3="libz3-dev"
+                        ;;
+                    buster)
+                        #buster
+                        echo "Installing solidity dependencies on Debian Buster (10.x)."
+                        install_z3="libz3-dev"
                         ;;
                     *)
                         #other Debian
                         echo "Installing solidity dependencies on unknown Debian version."
-                        echo "ERROR - Debian Jessie is the only Debian version which solidity has been tested on."
-                        echo "If you are using a different release and would like to get 'install_deps.sh'"
-                        echo "working for that release that would be fantastic."
-                        echo "Drop us a message at https://gitter.im/ethereum/solidity."
-                        exit 1
+                        echo "ERROR - This might not work, but we are trying anyway."
+                        echo "Drop us a message at https://gitter.im/ethereum/solidity-dev"
+                        install_z3="libz3-dev"
                         ;;
                 esac
 
@@ -211,7 +211,8 @@ case $(uname -s) in
                     gcc \
                     git \
                     libboost-all-dev \
-                    unzip
+                    unzip "$install_z3"
+
 
                 ;;
 
@@ -267,6 +268,7 @@ case $(uname -s) in
 
             Ubuntu)
                 #Ubuntu
+                install_z3=""
                 case $(lsb_release -cs) in
                     trusty)
                         #trusty
@@ -287,22 +289,24 @@ case $(uname -s) in
                     xenial)
                         #xenial
                         echo "Installing solidity dependencies on Ubuntu Xenial Xerus (16.04)."
+                        install_z3="libz3-dev"
                         ;;
                     yakkety)
                         #yakkety
                         echo "Installing solidity dependencies on Ubuntu Yakkety Yak (16.10)."
-                        echo ""
-                        echo "NOTE - You are in unknown territory with this preview OS."
-                        echo "We will need to update the Ethereum PPAs, work through build and runtime breaks, etc."
-                        echo "See https://github.com/ethereum/webthree-umbrella/issues/624."
-                        echo "If you would like to partner with us to work through these, that"
-                        echo "would be fantastic.  Please just comment on that issue.  Thanks!"
+                        install_z3="libz3-dev"
+                        ;;
+                    zesty)
+                        #zesty
+                        echo "Installing solidity dependencies on Ubuntu Zesty (17.04)."
+                        install_z3="libz3-dev"
                         ;;
                     *)
                         #other Ubuntu
                         echo "ERROR - Unknown or unsupported Ubuntu version (" $(lsb_release -cs) ")"
-                        echo "We only support Trusty, Utopic, Vivid, Wily and Xenial, with work-in-progress on Yakkety."
-                        exit 1
+                        echo "ERROR - This might not work, but we are trying anyway."
+                        echo "We only support Trusty, Utopic, Vivid, Wily, Xenial and Yakkety."
+                        install_z3="libz3-dev"
                         ;;
                 esac
 
@@ -311,7 +315,7 @@ case $(uname -s) in
                     build-essential \
                     cmake \
                     git \
-                    libboost-all-dev
+                    libboost-all-dev "$install_z3"
                 if [ "$CI" = true ]; then
                     # Install 'eth', for use in the Solidity Tests-over-IPC.
                     # We will not use this 'eth', but its dependencies

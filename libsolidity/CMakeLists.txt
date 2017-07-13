@@ -15,7 +15,23 @@ set(EXECUTABLE solidity)
 file(GLOB HEADERS "*/*.h" "../libjulia/backends/evm/*")
 
 include_directories(BEFORE ..)
+
+find_package(Z3 QUIET)
+if (${Z3_FOUND})
+  include_directories(${Z3_INCLUDE_DIR})
+  add_definitions(-DHAVE_Z3)
+  message("Z3 SMT solver FOUND.")
+else()
+  message("Z3 SMT solver NOT found.")
+  list(REMOVE_ITEM SRC_LIST "formal/Z3Interface.cpp")
+endif()
+
 add_library(${EXECUTABLE} ${SRC_LIST} ${HEADERS})
+
+if (${Z3_FOUND})
+  target_link_libraries(${EXECUTABLE} ${Z3_LIBRARY})
+endif()
+
 target_link_libraries(${EXECUTABLE})
 
 eth_use(${EXECUTABLE} REQUIRED Dev::soldevcore Solidity::solevmasm)
