@@ -100,6 +100,7 @@ public:
 	struct OptimiserSettings
 	{
 		bool isCreation = false;
+		bool runJumpdestRemover = false;
 		bool runPeephole = false;
 		bool runDeduplicate = false;
 		bool runCSE = false;

@@ -24,6 +24,7 @@
 #include <libevmasm/CommonSubexpressionEliminator.h>
 #include <libevmasm/ControlFlowGraph.h>
 #include <libevmasm/PeepholeOptimiser.h>
+#include <libevmasm/JumpdestRemover.h>
 #include <libevmasm/BlockDeduplicator.h>
 #include <libevmasm/ConstantOptimiser.h>
 #include <libevmasm/GasMeter.h>
@@ -352,6 +353,7 @@ Assembly& Assembly::optimise(bool _enable, bool _isCreation, size_t _runs)
 {
 	OptimiserSettings settings;
 	settings.isCreation = _isCreation;
+	settings.runJumpdestRemover = true;
 	settings.runPeephole = true;
 	if (_enable)
 	{
@@ -389,6 +391,13 @@ map<u256, u256> Assembly::optimiseInternal(OptimiserSettings _settings)
 	for (unsigned count = 1; count > 0;)
 	{
 		count = 0;
+
+		if (_settings.runJumpdestRemover)
+		{
+			JumpdestRemover jumpdestOpt(m_items);
+			if (jumpdestOpt.optimise())
+				count++;
+		}
 
 		if (_settings.runPeephole)
 		{
@@ -455,6 +464,14 @@ map<u256, u256> Assembly::optimiseInternal(OptimiserSettings _settings)
 			}
 		}
 	}
+
+	/// Run again after Deduplicate or CSE
+	if ((_settings.runDeduplicate || _settings.runCSE) && _settings.runJumpdestRemover)
+	{
+		JumpdestRemover jumpdestOpt(m_items);
+		jumpdestOpt.optimise();
+	}
+
 
 	if (_settings.runConstantOptimiser)
 		ConstantOptimisationMethod::optimiseConstants(
