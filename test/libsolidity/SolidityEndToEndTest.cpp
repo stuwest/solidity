@@ -3136,7 +3136,6 @@ BOOST_AUTO_TEST_CASE(event_really_lots_of_data)
 BOOST_AUTO_TEST_CASE(event_really_lots_of_data_from_storage)
 {
 	char const* sourceCode = R"(
-		pragma experimental ABIEncoderV2;
 		contract ClientReceipt {
 			bytes x;
 			event Deposit(uint fixeda, bytes dynx, uint fixedb);
@@ -4433,6 +4432,7 @@ BOOST_AUTO_TEST_CASE(array_copy_storage_abi)
 	// NOTE: This does not really test copying from storage to ABI directly,
 	// because it will always copy to memory first.
 	char const* sourceCode = R"(
+		pragma experimental ABIEncoderV2;
 		contract c {
 			uint8[] x;
 			uint16[] y;
