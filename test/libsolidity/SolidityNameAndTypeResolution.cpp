@@ -6604,6 +6604,32 @@ BOOST_AUTO_TEST_CASE(experimental_pragma)
 //	CHECK_ERROR_ALLOW_MULTI(text, SyntaxError, "Duplicate experimental feature name.");
 }
 
+BOOST_AUOT_TEST(reject_interface_creation)
+{
+	char const* text = R"(
+		interface I {}
+		contract C {
+			function f() {
+				new I();
+			}
+		}
+	)";
+	CHECK_ERROR(text, TypeError, "Cannot instantiate an interface or a library.");
+}
+
+BOOST_AUOT_TEST(reject_library_creation)
+{
+	char const* text = R"(
+		library L {}
+		contract C {
+			function f() {
+				new L();
+			}
+		}
+	)";
+	CHECK_ERROR(text, TypeError, "Cannot instantiate an interface or a library.");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 }
