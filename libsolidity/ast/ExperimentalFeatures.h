@@ -29,15 +29,20 @@ namespace solidity
 
 enum class ExperimentalFeature
 {
+	SMTChecker,
 	Test,
 	TestOnlyAnalysis
 };
 
-static const std::map<ExperimentalFeature, bool> ExperimentalFeatureOnlyAnalysis = {
+static const std::map<ExperimentalFeature, bool> ExperimentalFeatureOnlyAnalysis =
+{
+	{ ExperimentalFeature::SMTChecker, true },
 	{ ExperimentalFeature::TestOnlyAnalysis, true },
 };
 
-static const std::map<std::string, ExperimentalFeature> ExperimentalFeatureNames = {
+static const std::map<std::string, ExperimentalFeature> ExperimentalFeatureNames =
+{
+	{ "SMTChecker", ExperimentalFeature::SMTChecker },
 	{ "__test", ExperimentalFeature::Test },
 	{ "__testOnlyAnalysis", ExperimentalFeature::TestOnlyAnalysis },
 };
