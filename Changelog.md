@@ -2,6 +2,7 @@
 
 Features:
  * Parser: Display previous visibility specifier in error if multiple are found.
+ * Analyzer: Experimental partial support for Z3 SMT checker.
  * Syntax Checker: Support ``pragma experimental <feature>;`` to turn on experimental features.
  * Metadata: Store experimental flag in metadata CBOR.
 
